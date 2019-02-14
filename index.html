@@ -11,18 +11,133 @@
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
+     
+      #canvas { 
+        border: 1px solid blue;
+        width: 800px;
+        height: 600px;
+      }
+
     </style>
   </head>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-      var socket = io();
+    var socket = io();
   </script>
 
   <body>
+    <div>
+      <canvas id="canvas"></canvas>
+      
+    </div>
+
     <ul id="messages"></ul>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
+    
   </body>
+ <script>
+  const form = document.querySelector('form');
+  const messages = document.querySelector('#messages');
+  const canvas = document.querySelector('canvas')
+  const ctx = canvas.getContext('2d');
+
+  let x = 10;
+  let y = 10;
+  let h = 50;
+  let w = 50;
+
+  function initializeRect () {
+    ctx.fillStyle = 'rgb(200, 0, 0)';
+    ctx.fillRect(x, y, h, w);
+  }
+
+  function moveRight (d) {
+    ctx.clearRect(x, y, h, w)
+    x = x + 10;
+    ctx.fillRect(x, y, h, w);
+  }
+  function moveLeft () {
+    ctx.clearRect(x, y, h, w)
+    x = x - 10;
+    ctx.fillRect(x, y, h, w);
+  }
+  function moveUp () {
+    ctx.clearRect(x, y, h, w)
+    y = y - 10;
+    ctx.fillRect(x, y, h, w);
+  }
+  function moveDown () {
+    ctx.clearRect(x, y, h, w)
+    y = y + 10;
+    ctx.fillRect(x, y, h, w);
+  }
+
+  socket.on('new message', (msg) => {
+    addMessage(msg)
+  })
+
+
+  socket.on('right arrow', (d)=> {
+    console.log('socket on right arrow');
+    moveRight(d);
+  })
+  socket.on('left arrow', (d)=> {
+    console.log('socket on left arrow')
+    moveLeft(d);
+  })
+  socket.on('up arrow', (d)=> {
+    console.log('socket on up arrow')
+    moveUp(d);
+  })
+  socket.on('down arrow', (d)=> {
+    console.log('socket on down arrow')
+    moveDown(d);
+  })
+
+  function addMessage (msg) {
+    const message = document.createElement('div');
+    message.innerHTML = msg;
+    messages.appendChild(message);
+
+  }
+  
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    console.log('form submitted', e.target.children[0].value)
+    const msgText = e.target.children[0].value;
+    // addMessage(msgText);
+    socket.emit('message submitted', msgText)
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if ( event.keyCode == 39 ) {
+      console.log('right arrow')
+      socket.emit('right arrow', {x,y,h,w})
+    }
+    if ( event.keyCode == 37 ) {
+      console.log('left arrow')
+      socket.emit('left arrow', {x,y,h,w})
+    }
+    if ( event.keyCode == 38 ) {
+      console.log('up arrow')
+      socket.emit('up arrow', {x,y,h,w})
+    }
+    if ( event.keyCode == 40 ) {
+      console.log('down arrow')
+      socket.emit('down arrow', {x,y,h,w})
+    }
+  })
+
+
+  initializeRect()
+
+  
+
+
+ </script>
+
 </html>
