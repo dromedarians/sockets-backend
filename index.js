@@ -31,7 +31,7 @@ io.on('connection', function(socket){
   let w = 50;
 
   socket.on('right arrow', (d) => {
-    console.log(socket.server.clients)
+    console.log(socket.server)
     console.log('right arrow', d);
     io.emit('right arrow', {x, y, w, h}, {x: x+10, y, w, h});
     x+=10
