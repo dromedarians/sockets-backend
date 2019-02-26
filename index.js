@@ -23,21 +23,31 @@ io.on('connection', function(socket){
     io.emit('new message', msg)
   })
 
+
+  let x = 10;
+  let y = 10;
+  let h = 50;
+  let w = 50;
+
   socket.on('right arrow', (d) => {
     console.log('right arrow', d);
-    io.emit('right arrow', d);
+    io.emit('right arrow', {x, y, w, h}, {x: x+10, y, w, h});
+    x+=10
   })
   socket.on('left arrow', (d) => {
     console.log('left arrow')
-    io.emit('left arrow', d);
+    io.emit('left arrow', {x, y, w, h}, {x: x-10, y, w, h});
+    x-=10
   })
   socket.on('up arrow', (d) => {
     console.log('up arrow');
-    io.emit('up arrow', d);
+    io.emit('up arrow', {x, y, w, h}, {x, y: y-10, w, h});
+    y-=10
   })
   socket.on('down arrow', (d) => {
     console.log('down arrow');
-    io.emit('down arrow', d);
+    io.emit('down arrow', {x, y, w, h}, {x, y: y+10, w, h});
+    y+=10;
   })
 
 });
